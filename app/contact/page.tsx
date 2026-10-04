@@ -1,0 +1,69 @@
+import type { Metadata } from "next";
+import ContactForm from "./contact-form";
+import SiteFooter from "../components/site-footer";
+import SiteHeader from "../components/site-header";
+
+export const metadata: Metadata = {
+  title: "Discuss Your Costume Idea | Contact Oui Costume Studio",
+  description:
+    "Share your costume idea, occasion, and preferred date with Oui. Inquiries are welcome for dancewear, performance costumes, and special occasions.",
+};
+
+export default function ContactPage() {
+  return (
+    <>
+      <SiteHeader />
+      <main id="main-content" className="contact-page">
+        <section className="interior-intro section-shell">
+          <p className="eyebrow">
+            <span className="eyebrow__rule" />
+            CONTACT
+          </p>
+          <h1>
+            Let&apos;s hear
+            <br />
+            your idea.
+          </h1>
+          <p>
+            Whether your plans are set or you&apos;re still exploring, you&apos;re
+            welcome to reach out. I&apos;ll review your project and preferred
+            date before we discuss availability and next steps.
+          </p>
+        </section>
+
+        <section className="contact-content section-shell">
+          <div className="contact-content__aside">
+            <h2>A few details to get us started.</h2>
+            <p>
+              Include who the piece is for, the occasion, and when you hope
+              to have it. If you have colors, a budget, or references in mind,
+              those are helpful too.
+            </p>
+            <p>
+              My current season is fully scheduled, with books planned to
+              reopen in March 2027 for March through June orders. Please still
+              send your inquiry, whatever your date. I&apos;ll let you know
+              what&apos;s possible before you make any plans around an order.
+            </p>
+            <div className="contact-content__note">
+              <span>ON INSTAGRAM</span>
+              <p>
+                You can also send a direct message to{" "}
+                <a
+                  href="https://www.instagram.com/ouicostumestudio/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  @ouicostumestudio
+                </a>
+                .
+              </p>
+            </div>
+          </div>
+          <ContactForm />
+        </section>
+      </main>
+      <SiteFooter />
+    </>
+  );
+}

@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Oui Costume Studio
 
-## Getting Started
+A responsive Next.js site for Oui Costume Studio, with Home, About, Work,
+Contact, FAQ, and Privacy pages. Portfolio images are stored locally in
+`public/images`.
 
-First, run the development server:
+The Work page links to the `/work/photoshoot` and `/work/costumes` galleries.
+The original `/work/custom-adult-dancewear` and `/work/project-two-ky966-af7wn`
+URLs permanently redirect to these new routes. All 44 gallery photos are stored in `public/images/photoshoot` and
+`public/images/costumes`; gallery content is defined in `app/work/collections.ts`.
+Gallery images support cursor-following 2.5x detail zoom. On touch devices, tap
+to zoom, drag to inspect, and tap again to reset. Keyboard users can toggle
+with Enter or Space, pan with arrow keys, and reset with Escape.
+
+Availability messaging welcomes inquiries for any preferred date without
+promising an open production slot. The current schedule is explained on the
+Contact page; update that note when the studio's booking window changes.
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Contact form
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The contact form sends inquiries through Postmark's transactional email API.
+Copy `.env.example` to `.env.local` and set:
 
-## Learn More
+- `POSTMARK_SERVER_TOKEN` — the private server token from Postmark.
+- `POSTMARK_FROM_EMAIL` — a sender address verified in Postmark.
+- `CONTACT_TO_EMAIL` — the studio inbox that should receive inquiries.
 
-To learn more about Next.js, take a look at the following resources:
+Keep `.env.local` private; it is excluded from version control. The contact
+form returns a visible error until all three settings are configured.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The newsletter signup has been omitted. The privacy page should be reviewed
+against the final hosting and Postmark account settings before launch.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Checks
 
-## Deploy on Vercel
+Below 761px, the header uses a full-screen mobile navigation dialog.
+It supports Escape to close, contains keyboard focus while open, restores
+focus to the trigger on close, and locks background scrolling.
+The overlay unfurls with a curved fabric-like edge and temporary fold shading,
+followed by staggered link entrances. Closing retracts the fabric. Reduced-motion
+preferences remove the folds and link animation and shorten the overlay transition.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm lint
+pnpm build
+```
