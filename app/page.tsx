@@ -13,21 +13,18 @@ const portfolio = [
   {
     image: "/images/dancer-blue.jpg",
     alt: "Dancer performing in a custom blue competition costume",
-    label: "Blue performance costume",
     href: "/work/photoshoot",
     className: "portfolio-card--portrait",
   },
   {
     image: "/images/dance-costume.jpg",
     alt: "Dancer in a classic black studio leotard",
-    label: "Black studio leotard",
     href: "/work/costumes",
     className: "portfolio-card--classic",
   },
   {
     image: "/images/stage-look.jpg",
     alt: "Ballet dancer performing in a vibrant coral costume",
-    label: "Coral stage costume",
     href: "/work/photoshoot",
     className: "portfolio-card--stage",
   },

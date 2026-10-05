@@ -6,6 +6,7 @@ import {
   useTransform,
 } from "motion/react";
 import { type ReactNode } from "react";
+import useIsStackedLayout from "./use-is-stacked-layout";
 import usePrefersReducedMotion from "./use-prefers-reduced-motion";
 
 type ScrollFrameProps = {
@@ -55,19 +56,20 @@ export function HeroCopyParallax({
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 600], [0, 42]);
   const reducedMotion = usePrefersReducedMotion();
+  const stacked = useIsStackedLayout();
 
   return (
     <motion.div
       className={className}
       aria-hidden={ariaHidden}
       initial={reducedMotion ? false : { opacity: 0, x: -14 }}
-      animate={{ opacity: 1 }}
+      animate={{ opacity: 1, x: 0 }}
       transition={{
         duration: 0.9,
         delay: 0.12,
         ease: [0.22, 1, 0.36, 1] as const,
       }}
-      style={{ y: reducedMotion ? 0 : y }}
+      style={{ y: reducedMotion || stacked ? 0 : y }}
     >
       {children}
     </motion.div>
@@ -82,6 +84,7 @@ export function HeroImageParallax({
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 600], [0, -36]);
   const reducedMotion = usePrefersReducedMotion();
+  const stacked = useIsStackedLayout();
 
   return (
     <motion.div
@@ -98,7 +101,7 @@ export function HeroImageParallax({
         delay: 0.24,
         ease: [0.22, 1, 0.36, 1] as const,
       }}
-      style={{ y: reducedMotion ? 0 : y }}
+      style={{ y: reducedMotion || stacked ? 0 : y }}
     >
       {children}
     </motion.div>
@@ -110,6 +113,8 @@ export function HeroCaptionParallax({ children, className }: ScrollFrameProps) {
   const x = useTransform(scrollY, [0, 600], [0, 16]);
   const y = useTransform(scrollY, [0, 600], [0, 54]);
   const reducedMotion = usePrefersReducedMotion();
+  const stacked = useIsStackedLayout();
+  const staticPosition = reducedMotion || stacked;
 
   return (
     <motion.div
@@ -122,8 +127,8 @@ export function HeroCaptionParallax({ children, className }: ScrollFrameProps) {
         ease: [0.22, 1, 0.36, 1] as const,
       }}
       style={{
-        x: reducedMotion ? 0 : x,
-        y: reducedMotion ? 0 : y,
+        x: staticPosition ? 0 : x,
+        y: staticPosition ? 0 : y,
       }}
     >
       {children}
