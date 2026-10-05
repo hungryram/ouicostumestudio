@@ -17,6 +17,30 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
+function renderEmail(title: string, content: string): string {
+  return `<!doctype html>
+<html lang="en">
+  <body style="margin:0;padding:0;background:#f8f5f0;font-family:Georgia,'Times New Roman',serif;color:#30252c;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f5f0;padding:32px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border:1px solid #ded6cf;">
+            <tr>
+              <td style="background:#69445d;padding:28px 32px;color:#ffffff;">
+                <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#f1dce4;">Oui Costume Studio</p>
+                <h1 style="margin:0;font-size:26px;font-weight:normal;line-height:1.25;">${title}</h1>
+              </td>
+            </tr>
+            ${content}
+          </table>
+          <p style="margin:20px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#70666b;">Powered by <a href="https://www.hungryram.com" style="color:#69445d;">hungryram.com</a></p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+}
+
 export async function POST(request: Request) {
   const contentType = request.headers.get("content-type") ?? "";
   if (!contentType.toLowerCase().includes("application/json")) {
@@ -157,19 +181,7 @@ export async function POST(request: Request) {
                 <td style="padding:10px 0;border-bottom:1px solid #ded6cf;color:#30252c;font-size:16px;vertical-align:top;">${value}</td>
               </tr>`;
 
-  const htmlBody = `<!doctype html>
-<html lang="en">
-  <body style="margin:0;padding:0;background:#f8f5f0;font-family:Georgia,'Times New Roman',serif;color:#30252c;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f5f0;padding:32px 16px;">
-      <tr>
-        <td align="center">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border:1px solid #ded6cf;">
-            <tr>
-              <td style="background:#69445d;padding:28px 32px;color:#ffffff;">
-                <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#f1dce4;">Oui Costume Studio</p>
-                <h1 style="margin:0;font-size:26px;font-weight:normal;line-height:1.25;">New inquiry from ${safeName}</h1>
-              </td>
-            </tr>
+  const htmlBody = renderEmail(`New inquiry from ${safeName}`, `
             <tr>
               <td style="padding:28px 32px 8px;font-family:Arial,Helvetica,sans-serif;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${detailRow("Name", safeName)}${detailRow("Email", `<a href="mailto:${safeEmail}" style="color:#69445d;">${safeEmail}</a>`)}${detailRow("Project", safeProject)}
@@ -188,13 +200,7 @@ export async function POST(request: Request) {
                 <p style="margin:14px 0 0;color:#70666b;font-size:14px;">Or simply reply to this email.</p>
               </td>
             </tr>
-          </table>
-          <p style="margin:20px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#70666b;">Powered by <a href="https://www.hungryram.com" style="color:#69445d;">hungryram.com</a></p>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>`;
+  `);
 
   let response: Response;
   try {
@@ -231,5 +237,66 @@ export async function POST(request: Request) {
     return Response.json({ error: "The contact form is temporarily unavailable." }, { status: 502 });
   }
 
-  return Response.json({ sent: true }, { status: 200 });
+  const confirmationText = [
+    `Hi ${name},`,
+    "",
+    "Thank you for getting in touch with Oui Costume Studio. Your inquiry has been received, and I'll be in touch to talk through your idea.",
+    "",
+    "This confirms receipt of your message, not a booking or an available production date.",
+    "",
+    "If you'd like to add anything, just reply to this email.",
+    "",
+    "Warmly,",
+    "Oui",
+    "Oui Costume Studio",
+    "",
+    "Powered by hungryram.com (https://www.hungryram.com)",
+  ].join("\n");
+  const confirmationHtml = renderEmail("Thank you for your inquiry", `
+            <tr>
+              <td style="padding:28px 32px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;">
+                <p style="margin:0 0 16px;">Hi ${safeName},</p>
+                <p style="margin:0 0 16px;">Thank you for getting in touch with Oui Costume Studio. Your inquiry has been received, and I'll be in touch to talk through your idea.</p>
+                <p style="margin:0 0 16px;color:#70666b;font-size:14px;">This confirms receipt of your message, not a booking or an available production date.</p>
+                <p style="margin:0 0 24px;">If you'd like to add anything, just reply to this email.</p>
+                <p style="margin:0;">Warmly,<br>Oui<br>Oui Costume Studio</p>
+              </td>
+            </tr>
+  `);
+
+  try {
+    const confirmation = await fetch("https://api.postmarkapp.com/email", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-Postmark-Server-Token": serverToken,
+      },
+      body: JSON.stringify({
+        From: `"Oui Costume Studio" <${sender}>`,
+        To: email,
+        ReplyTo: recipients.join(", "),
+        Subject: "We've received your inquiry | Oui Costume Studio",
+        TextBody: confirmationText,
+        HtmlBody: confirmationHtml,
+        MessageStream: "outbound",
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+
+    if (!confirmation.ok) {
+      const detail: unknown = await confirmation.json();
+      console.error("Postmark rejected a confirmation email request.", {
+        status: confirmation.status,
+        errorCode: isRecord(detail) ? detail.ErrorCode : undefined,
+        message: isRecord(detail) ? detail.Message : undefined,
+      });
+      return Response.json({ sent: true, confirmationSent: false });
+    }
+  } catch (error) {
+    console.error("Postmark confirmation email request failed.", error);
+    return Response.json({ sent: true, confirmationSent: false });
+  }
+
+  return Response.json({ sent: true, confirmationSent: true });
 }

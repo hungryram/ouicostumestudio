@@ -22,6 +22,7 @@ const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 export default function ContactForm() {
   const [state, setState] = useState<SubmissionState>("idle");
+  const [confirmationSent, setConfirmationSent] = useState(true);
   const [turnstileReady, setTurnstileReady] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileContainer = useRef<HTMLDivElement>(null);
@@ -87,6 +88,8 @@ export default function ContactForm() {
         return;
       }
 
+      const result: { confirmationSent?: boolean } = await response.json();
+      setConfirmationSent(result.confirmationSent !== false);
       form.reset();
       setState("sent");
     } catch {
@@ -156,7 +159,9 @@ export default function ContactForm() {
         {state === "sending" ? "Sending…" : "Send your inquiry"}
       </button>
       <p className={`contact-form__status contact-form__status--${state}`} aria-live="polite" role="status">
-        {state === "sent" && "Thanks for your message. I’ll be in touch."}
+        {state === "sent" && (confirmationSent
+          ? "Thanks for your message. A confirmation email is on its way, and I’ll be in touch."
+          : "Your inquiry was received, but the confirmation email couldn’t be sent. There’s no need to submit again; I’ll be in touch.")}
         {state === "unverified" && "Please complete the security check above, then send your inquiry."}
         {state === "error" && "Your message didn’t send. Please try again, or contact the studio directly."}
       </p>

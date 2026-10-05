@@ -37,6 +37,12 @@ Copy `.env.example` to `.env.local` and set:
   multiple addresses with commas.
 
 Inquiries are sent from "Oui Costume Studio" using the `POSTMARK_FROM_EMAIL` address.
+After Postmark accepts the studio inquiry, a separate branded confirmation is
+sent to the submitter, with replies directed to the studio inbox(es). Both
+emails include a "Powered by hungryram.com" link. The confirmation acknowledges
+receipt only, not a booking or production availability. If confirmation sending
+fails, the server logs the failure and the form explains that the inquiry was
+received and does not need to be submitted again.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` — the Cloudflare Turnstile site key.
 - `TURNSTILE_SECRET_KEY` — the Cloudflare Turnstile secret key.
 
