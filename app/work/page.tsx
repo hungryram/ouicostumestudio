@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/work" },
   title: "Handmade Dance Costumes & Custom Wear | Oui Costume Studio",
   description:
-    "Custom jazz, contemporary, lyrical, and competition costumes, plus wedding and pageant wear. Handmade in Southern California and shipped nationwide.",
+    "Custom jazz, contemporary, lyrical, and competition costumes. Handmade in Southern California and shipped nationwide.",
 };
 
 const specialties = [

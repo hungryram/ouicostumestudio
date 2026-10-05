@@ -83,7 +83,7 @@ export default function FaqPage() {
             <Accordion title="What kinds of pieces can the studio make?">
               <p>
                 I make custom dancewear and performance costumes, as well as
-                wedding, prom, and pageant outfits and audition wear.
+                prom outfits and audition wear.
               </p>
             </Accordion>
             <Accordion title="What do costumes cost, and how long do they take?">

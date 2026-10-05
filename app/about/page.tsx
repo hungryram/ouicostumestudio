@@ -106,8 +106,8 @@ export default function AboutPage() {
               </p>
               <p>
                 My work includes jazz, contemporary, lyrical, and teen
-                competition costumes, along with wedding dresses, prom and
-                pageant wear, and audition pieces for NFL, NBA, collegiate
+                competition costumes, along with prom wear and audition
+                pieces for NFL, NBA, collegiate
                 dance teams, and Broadway. Each setting asks something
                 different of a garment; I enjoy working out those details
                 with the person wearing it.

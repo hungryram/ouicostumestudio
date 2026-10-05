@@ -56,7 +56,7 @@ export default function Home() {
               <a className="button button--plum" href="/contact">
                 Start a conversation
               </a>
-              <a className="text-link" href="#work">
+              <a className="text-link" href="/work">
                 Explore the work
               </a>
             </div>
@@ -266,7 +266,7 @@ export default function Home() {
             ))}
           </div>
           <p className="work-section__footnote">
-            Jazz, contemporary, lyrical, and teen competition costumes, plus wedding dresses and pageant wear.
+            Jazz, contemporary, lyrical, and teen competition costumes.
           </p>
           <div className="work-section__action">
             <a className="text-link" href="/work">

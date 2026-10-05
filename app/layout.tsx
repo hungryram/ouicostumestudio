@@ -9,11 +9,11 @@ export const metadata: Metadata = {
   },
   title: "Oui Costume Studio | Custom Dancewear & Costumes",
   description:
-    "Handmade custom dancewear, performance costumes, wedding dresses, and pageant wear by a family-run studio in Southern California. Shipped nationwide.",
+    "Handmade custom dancewear and performance costumes by a family-run studio in Southern California. Shipped nationwide.",
   openGraph: {
     title: "Oui Costume Studio | Custom Dancewear & Costumes",
     description:
-      "Handmade custom dancewear, performance costumes, wedding dresses, and pageant wear by a family-run studio in Southern California. Shipped nationwide.",
+      "Handmade custom dancewear and performance costumes by a family-run studio in Southern California. Shipped nationwide.",
     type: "website",
     siteName: "Oui Costume Studio",
   },
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Oui Costume Studio | Custom Dancewear & Costumes",
     description:
-      "Handmade custom dancewear, performance costumes, wedding dresses, and pageant wear by a family-run studio in Southern California. Shipped nationwide.",
+      "Handmade custom dancewear and performance costumes by a family-run studio in Southern California. Shipped nationwide.",
   },
   robots: {
     index: true,
@@ -47,7 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     url: "https://www.ouicostumestudio.com",
     logo: "https://www.ouicostumestudio.com/images/logo.png",
     description:
-      "Handmade custom dancewear, performance costumes, wedding dresses, and pageant wear by a family-run studio in Southern California. Shipped nationwide.",
+      "Handmade custom dancewear and performance costumes by a family-run studio in Southern California. Shipped nationwide.",
     founder: {
       "@type": "Person",
       name: "Oui Dettmer",

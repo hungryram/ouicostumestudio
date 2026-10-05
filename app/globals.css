@@ -3,7 +3,7 @@
 :root {
   --paper: #f8f5f0;
   --paper-deep: #efe9e0;
-  --ink: #30252c;
+  --ink: #171417;
   --muted: #70666b;
   --plum: #69445d;
   --plum-deep: #442a3b;
@@ -48,7 +48,7 @@ a:focus-visible {
   left: 9px;
   padding: 10px 14px;
   transform: translateY(-150%);
-  background: var(--plum-deep);
+  background: #29222b;
   color: white;
   font-size: 12px;
 }
@@ -68,7 +68,7 @@ a:focus-visible {
   align-items: center;
   justify-content: center;
   padding: 7px 20px;
-  background: var(--plum-deep);
+  background: #211b23;
   color: #fff8f3;
   font-size: 10px;
   font-weight: 500;
@@ -102,6 +102,11 @@ a:focus-visible {
   height: auto;
 }
 
+.wordmark--footer .wordmark__logo {
+  filter: invert(1);
+  mix-blend-mode: screen;
+}
+
 .main-nav {
   display: flex;
   align-items: center;
@@ -115,7 +120,7 @@ a:focus-visible {
 }
 
 .main-nav a {
-  color: #574d52;
+  color: #484248;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -131,8 +136,8 @@ a:focus-visible {
 .header-cta {
   justify-self: end;
   padding: 13px 17px;
-  border: 1px solid #bda8b3;
-  color: var(--plum);
+  border: 1px solid #171417;
+  color: #171417;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -144,8 +149,8 @@ a:focus-visible {
 }
 
 .header-cta:hover {
-  border-color: var(--plum);
-  background: var(--plum);
+  border-color: #171417;
+  background: #171417;
   color: white;
 }
 
@@ -164,7 +169,7 @@ a:focus-visible {
   margin: 0;
   padding: 80px 24px;
   border: 0;
-  background: var(--plum);
+  background: #29222b;
   color: white;
   overflow-y: auto;
 }
@@ -437,12 +442,12 @@ p {
 }
 
 .button--plum {
-  background: var(--plum);
+  background: #171417;
   color: #fffaf6;
 }
 
 .button--plum:hover {
-  background: var(--plum-deep);
+  background: #342735;
 }
 
 .text-link {
@@ -480,7 +485,7 @@ p {
   overflow: hidden;
   width: 100%;
   aspect-ratio: 0.79;
-  background: #d9d4d2;
+  background: var(--paper-deep);
 }
 
 .hero__image {
@@ -498,7 +503,7 @@ p {
   flex-direction: column;
   padding: 15px 19px;
   background: var(--paper);
-  box-shadow: 0 9px 24px #30252c12;
+  box-shadow: 0 12px 28px #0008;
 }
 
 .hero__caption-kicker {
@@ -687,7 +692,7 @@ p {
   position: relative;
   overflow: hidden;
   aspect-ratio: 0.83;
-  background: #ded8d6;
+  background: var(--paper-deep);
 }
 
 .portfolio-card--classic .portfolio-card__image {
@@ -840,11 +845,11 @@ p {
 .process-step {
   min-height: 238px;
   padding: 20px 16px 19px 0;
-  border-top: 1px solid #cdbdc3;
+  border-top: 1px solid var(--line);
 }
 
 .process-step__number {
-  color: #9e7588;
+  color: var(--plum);
   font-family: var(--serif);
   font-size: 13px;
 }
@@ -873,7 +878,7 @@ p {
   align-items: center;
   justify-content: center;
   padding: 75px 24px;
-  background: var(--plum);
+  background: #171417;
   color: #fff9f5;
   text-align: center;
 }
@@ -895,17 +900,18 @@ p {
 }
 
 .button--cream {
-  background: var(--paper);
-  color: var(--plum-deep);
+  background: #171417;
+  color: #fffaf6;
 }
 
 .button--cream:hover {
-  background: white;
+  background: #342735;
 }
 
 .site-footer {
   padding: 47px max(48px, calc((100% - 1352px) / 2)) 22px;
-  background: var(--paper);
+  background: #0c0b0d;
+  color: #f4eff2;
 }
 
 .wordmark--footer {
@@ -915,7 +921,7 @@ p {
 
 .site-footer__tagline {
   margin: 16px 0 24px;
-  color: var(--muted);
+  color: #b5acb6;
   font-family: var(--serif);
   font-size: 16px;
   font-style: italic;
@@ -928,7 +934,7 @@ p {
   gap: 31px;
   padding: 20px 0 28px;
   border-top: 1px solid var(--line);
-  color: var(--plum-deep);
+  color: #f4eff2;
   font-size: 10px;
   letter-spacing: 0.04em;
 }
@@ -940,7 +946,7 @@ p {
   justify-content: space-between;
   gap: 18px;
   border-top: 1px solid var(--line);
-  color: var(--muted);
+  color: #b5acb6;
   font-size: 9px;
   letter-spacing: 0.03em;
 }
@@ -994,7 +1000,7 @@ p {
 
 .about-story__image {
   position: relative;
-  background: #928381;
+  background: var(--paper-deep);
 }
 
 .about-story__image img {
@@ -1031,7 +1037,7 @@ p {
 }
 
 .about-experience {
-  background: var(--plum-deep);
+  background: #211b23;
   color: #fff9f5;
 }
 
@@ -1241,7 +1247,7 @@ p {
   position: relative;
   overflow: hidden;
   aspect-ratio: 0.95;
-  background: #d6d0ce;
+  background: var(--paper-deep);
 }
 
 .work-gallery__item--2 .work-gallery__image,
@@ -1291,7 +1297,7 @@ p {
 }
 
 .work-gallery__item figcaption span {
-  color: #9e7588;
+  color: var(--plum);
   font-family: var(--sans);
   font-size: 8px;
   font-style: normal;
@@ -1321,7 +1327,7 @@ p {
 }
 
 .specialty-card > span {
-  color: #9e7588;
+  color: var(--plum);
   font-family: var(--serif);
   font-size: 14px;
 }
@@ -1549,11 +1555,11 @@ p {
 }
 
 .faq-item {
-  border-top: 1px solid #d6cbd0;
+  border-top: 1px solid var(--line);
 }
 
 .faq-item:last-of-type {
-  border-bottom: 1px solid #d6cbd0;
+  border-bottom: 1px solid var(--line);
 }
 
 .faq-item__trigger {
@@ -1640,7 +1646,7 @@ p {
 }
 
 .faq-item__number {
-  color: #9e7588;
+  color: var(--plum);
   font-family: var(--sans);
   font-size: 8px;
   letter-spacing: 0.12em;
