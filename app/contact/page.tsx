@@ -4,6 +4,7 @@ import SiteFooter from "../components/site-footer";
 import SiteHeader from "../components/site-header";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/contact" },
   title: "Discuss Your Costume Idea | Contact Oui Costume Studio",
   description:
     "Share your costume idea, occasion, and preferred date with Oui. Inquiries are welcome for dancewear, performance costumes, and special occasions.",

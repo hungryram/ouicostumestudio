@@ -3,6 +3,7 @@ import SiteFooter from "../components/site-footer";
 import SiteHeader from "../components/site-header";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/private-policy" },
   title: "Privacy | Oui Costume Studio",
   description: "How Oui Costume Studio handles information shared through this website.",
 };

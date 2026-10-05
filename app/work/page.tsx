@@ -6,6 +6,7 @@ import SiteHeader from "../components/site-header";
 import { costumes, photoshoot } from "./collections";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/work" },
   title: "Handmade Dance Costumes & Custom Wear | Oui Costume Studio",
   description:
     "Custom jazz, contemporary, lyrical, and competition costumes, plus wedding and pageant wear. Handmade in Southern California and shipped nationwide.",

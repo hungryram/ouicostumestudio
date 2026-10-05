@@ -4,6 +4,7 @@ import SiteFooter from "../components/site-footer";
 import SiteHeader from "../components/site-header";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/about" },
   title: "About Oui Costume Studio | Handmade Costumes Since 2004",
   description:
     "Meet Oui Dettmer and discover the story behind Oui Dancewear, Oui Design Shop, and today's Oui Costume Studio in Southern California.",

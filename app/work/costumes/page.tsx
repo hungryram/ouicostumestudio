@@ -3,6 +3,7 @@ import WorkCollectionPage from "../../components/work-collection";
 import { costumes, photoshoot } from "../collections";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/work/costumes" },
   title: "Custom Dance Competition Costumes | Oui Costume Studio",
   description: costumes.description,
 };
