@@ -1,3 +1,4 @@
+import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -18,12 +19,16 @@ export const metadata: Metadata = {
     description:
       "Handmade custom dancewear, performance costumes, wedding dresses, and pageant wear by a family-run studio in Southern California. Shipped nationwide.",
   },
+  verification: {
+    google: "PqZlZfS9A4ac61v-xCw8EK9pAcPGajasd0ul51sJTK4",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
       <body>{children}</body>
+      <GoogleAnalytics gaId="G-ZNE1KG0QMZ" />
     </html>
   );
 }
