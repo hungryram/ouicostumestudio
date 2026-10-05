@@ -261,7 +261,6 @@ export default function Home() {
                       sizes="(max-width: 760px) 90vw, 32vw"
                     />
                   </div>
-                  <h3>{item.label}</h3>
                 </a>
               </IntroReveal>
             ))}
