@@ -45,6 +45,19 @@ export default function ContactPage() {
               send your inquiry, whatever your date. I&apos;ll let you know
               what&apos;s possible before you make any plans around an order.
             </p>
+            <div className="contact-content__note contact-content__note--details">
+              <span>PRICING &amp; TIMING</span>
+              <p>
+                Basic costumes in standard sizing start at $250; custom
+                costumes start at $350. Most designs range from $375 to $500.
+                Every piece is handmade with premium fabric.
+              </p>
+              <p>
+                Standard delivery is 4–6 weeks from payment. Rush orders may
+                be available for an additional charge, with delivery in 2–4
+                weeks from payment.
+              </p>
+            </div>
             <div className="contact-content__note">
               <span>ON SOCIAL MEDIA</span>
               <p>

@@ -126,9 +126,30 @@ export default function ContactForm() {
           What type of project is this?
           <select name="projectType" defaultValue="">
             <option value="">Choose a project type (optional)</option>
+            <option value="Jazz">Jazz</option>
+            <option value="Contemporary">Contemporary</option>
             <option value="Dancewear or performance costume">Dancewear or performance costume</option>
             <option value="Special occasion">Special occasion</option>
             <option value="Something else">Something else</option>
+          </select>
+        </label>
+        <label className="contact-form__full">
+          Is it for a group or solo?
+          <select name="projectFormat" defaultValue="">
+            <option value="">Choose a format (optional)</option>
+            <option value="Group">Group</option>
+            <option value="Solo">Solo</option>
+          </select>
+        </label>
+        <label className="contact-form__full">
+          What price range are you considering?
+          <select name="priceRange" defaultValue="">
+            <option value="">Choose a price range (optional)</option>
+            <option value="$250–$350">$250–$350</option>
+            <option value="$350–$500">$350–$500</option>
+            <option value="$500–$1,000">$500–$1,000</option>
+            <option value="$1,000+">$1,000+</option>
+            <option value="Not sure yet">Not sure yet</option>
           </select>
         </label>
         <label className="contact-form__full">

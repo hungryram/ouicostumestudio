@@ -75,7 +75,32 @@ export async function POST(request: Request) {
     submission.projectType === undefined
       ? ""
       : getString(submission.projectType);
+  const projectFormat =
+    submission.projectFormat === undefined
+      ? ""
+      : getString(submission.projectFormat);
+  const priceRange =
+    submission.priceRange === undefined
+      ? ""
+      : getString(submission.priceRange);
   const message = getString(submission.message);
+  const projectTypes = new Set([
+    "",
+    "Jazz",
+    "Contemporary",
+    "Dancewear or performance costume",
+    "Special occasion",
+    "Something else",
+  ]);
+  const projectFormats = new Set(["", "Group", "Solo"]);
+  const priceRanges = new Set([
+    "",
+    "$250–$350",
+    "$350–$500",
+    "$500–$1,000",
+    "$1,000+",
+    "Not sure yet",
+  ]);
 
   if (
     !name ||
@@ -85,7 +110,11 @@ export async function POST(request: Request) {
     email.length > 254 ||
     !emailPattern.test(email) ||
     projectType === null ||
-    projectType.length > 100 ||
+    !projectTypes.has(projectType) ||
+    projectFormat === null ||
+    !projectFormats.has(projectFormat) ||
+    priceRange === null ||
+    !priceRanges.has(priceRange) ||
     !message ||
     message.length > 5000
   ) {
@@ -152,12 +181,16 @@ export async function POST(request: Request) {
   }
 
   const projectLabel = projectType || "Not specified";
+  const formatLabel = projectFormat || "Not specified";
+  const priceRangeLabel = priceRange || "Not specified";
   const subject = `New Costume Inquiry from ${name}`;
   const replySubject = encodeURIComponent("Re: Your Oui Costume Studio inquiry");
   const replyHref = `mailto:${encodeURIComponent(email)}?subject=${replySubject}`;
   const safeName = escapeHtml(name);
   const safeEmail = escapeHtml(email);
   const safeProject = escapeHtml(projectLabel);
+  const safeFormat = escapeHtml(formatLabel);
+  const safePriceRange = escapeHtml(priceRangeLabel);
   const safeMessage = escapeHtml(message).replace(/\r?\n/g, "<br>");
 
   const textBody = [
@@ -166,6 +199,8 @@ export async function POST(request: Request) {
     `Name: ${name}`,
     `Email: ${email}`,
     `Project type: ${projectLabel}`,
+    `Format: ${formatLabel}`,
+    `Price range: ${priceRangeLabel}`,
     "",
     "Project details:",
     message,
@@ -184,7 +219,7 @@ export async function POST(request: Request) {
   const htmlBody = renderEmail(`New inquiry from ${safeName}`, `
             <tr>
               <td style="padding:28px 32px 8px;font-family:Arial,Helvetica,sans-serif;">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${detailRow("Name", safeName)}${detailRow("Email", `<a href="mailto:${safeEmail}" style="color:#69445d;">${safeEmail}</a>`)}${detailRow("Project", safeProject)}
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${detailRow("Name", safeName)}${detailRow("Email", `<a href="mailto:${safeEmail}" style="color:#69445d;">${safeEmail}</a>`)}${detailRow("Project", safeProject)}${detailRow("Format", safeFormat)}${detailRow("Price range", safePriceRange)}
                 </table>
               </td>
             </tr>

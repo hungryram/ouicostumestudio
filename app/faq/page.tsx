@@ -85,6 +85,17 @@ export default function FaqPage() {
                 wedding, prom, and pageant outfits and audition wear.
               </p>
             </Accordion>
+            <Accordion title="What do costumes cost, and how long do they take?">
+              <p>
+                Basic costumes in standard sizing start at $250, while custom
+                costumes start at $350. Most designs range from $375 to $500.
+                Each piece is handmade with premium fabric. Standard delivery
+                takes 4–6 weeks from payment. Rush orders may be available for
+                an additional charge, with delivery in 2–4 weeks from payment.
+                Timing and availability are confirmed before an order moves
+                forward.
+              </p>
+            </Accordion>
             <Accordion title="What should I include in my first message?">
               <p>
                 Please include your deadline and whether the costume is for

@@ -2098,12 +2098,19 @@ p {
   }
 
   .contact-content__aside h2 {
-    max-width: 430px;
+    max-width: none;
     font-size: 29px;
   }
 
+  .contact-content__aside > p {
+    max-width: none;
+  }
+
   .contact-content__note {
+    width: 100%;
+    max-width: none;
     margin-top: 22px;
+    box-sizing: border-box;
   }
 
   .contact-form {
