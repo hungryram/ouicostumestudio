@@ -4,6 +4,11 @@ const nextConfig: NextConfig = {
   redirects() {
     return [
       {
+        source: "/cart",
+        destination: "/",
+        permanent: true,
+      },
+      {
         source: "/work/custom-adult-dancewear",
         destination: "/work/photoshoot",
         permanent: true,

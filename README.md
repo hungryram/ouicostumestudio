@@ -8,6 +8,7 @@ The Work page links to the `/work/photoshoot` and `/work/costumes` galleries.
 The original `/work/custom-adult-dancewear` and `/work/project-two-ky966-af7wn`
 URLs permanently redirect to these new routes. All 44 gallery photos are stored in `public/images/photoshoot` and
 `public/images/costumes`; gallery content is defined in `app/work/collections.ts`.
+The retired `/cart` URL permanently redirects to the homepage.
 Gallery images support cursor-following 2.5x detail zoom. On touch devices, tap
 to zoom, drag to inspect, and tap again to reset. Keyboard users can toggle
 with Enter or Space, pan with arrow keys, and reset with Escape.
