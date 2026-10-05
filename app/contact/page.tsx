@@ -46,15 +46,34 @@ export default function ContactPage() {
               what&apos;s possible before you make any plans around an order.
             </p>
             <div className="contact-content__note">
-              <span>ON INSTAGRAM</span>
+              <span>ON SOCIAL MEDIA</span>
               <p>
-                You can also send a direct message to{" "}
+                You can also send a direct message on{" "}
                 <a
+                  className="contact-content__social-link"
                   href="https://www.instagram.com/ouicostumestudio/"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  @ouicostumestudio
+                  Instagram
+                </a>
+                ,{" "}
+                <a
+                  className="contact-content__social-link"
+                  href="https://www.facebook.com/ouicostumestudio"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Facebook
+                </a>
+                , or{" "}
+                <a
+                  className="contact-content__social-link"
+                  href="https://www.tiktok.com/@ouicostumestudio"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  TikTok
                 </a>
                 .
               </p>

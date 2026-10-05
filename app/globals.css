@@ -1309,7 +1309,7 @@ p {
 
 .specialties-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 19px;
 }
 
@@ -1410,6 +1410,24 @@ p {
   color: var(--muted);
   font-size: 10px;
   line-height: 1.75;
+}
+
+.contact-content__social-link {
+  color: var(--plum-deep);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.contact-content__social-link:hover {
+  color: var(--rose);
+}
+
+.contact-content__social-link:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid var(--plum);
+  outline-offset: 3px;
 }
 
 .contact-form {

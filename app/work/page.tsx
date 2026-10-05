@@ -20,10 +20,6 @@ const specialties = [
     title: "The fit",
     copy: "A costume needs to stay secure through turns, extensions, and floorwork. The placement of seams, straps, and openings matters as much as the finished look.",
   },
-  {
-    title: "Weddings & pageants",
-    copy: "For a ceremony or a pageant, we can explore the neckline, shape, and decorative details that suit you and the occasion.",
-  },
 ];
 
 export default function WorkPage() {
