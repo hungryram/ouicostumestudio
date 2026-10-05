@@ -1500,8 +1500,14 @@ p {
   color: #315d45;
 }
 
-.contact-form__status--error {
+.contact-form__status--error,
+.contact-form__status--unverified {
   color: #a2384c;
+}
+
+.contact-form__turnstile {
+  min-height: 65px;
+  margin-bottom: 20px;
 }
 
 .contact-form__privacy {

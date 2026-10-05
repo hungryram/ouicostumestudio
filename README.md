@@ -33,10 +33,20 @@ Copy `.env.example` to `.env.local` and set:
 
 - `POSTMARK_SERVER_TOKEN` — the private server token from Postmark.
 - `POSTMARK_FROM_EMAIL` — a sender address verified in Postmark.
-- `CONTACT_TO_EMAIL` — the studio inbox that should receive inquiries.
+- `CONTACT_TO_EMAIL` — the inbox(es) that should receive inquiries. Separate
+  multiple addresses with commas.
+
+Inquiries are sent from "Oui Costume Studio" using the `POSTMARK_FROM_EMAIL` address.
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY` — the Cloudflare Turnstile site key.
+- `TURNSTILE_SECRET_KEY` — the Cloudflare Turnstile secret key.
+
+Every submission is verified with Cloudflare Turnstile on the server before any
+email is sent. For local development, Cloudflare's always-pass test keys
+(`1x00000000000000000000AA` / `1x0000000000000000000000000000000AA`) can be used.
+Add `localhost` and the production domain to the widget's hostnames in Cloudflare.
 
 Keep `.env.local` private; it is excluded from version control. The contact
-form returns a visible error until all three settings are configured.
+form returns a visible error until all of these settings are configured.
 
 The newsletter signup has been omitted. The privacy page should be reviewed
 against the final hosting and Postmark account settings before launch.

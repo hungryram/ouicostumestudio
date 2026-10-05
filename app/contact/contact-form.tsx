@@ -1,20 +1,79 @@
 "use client";
 
-import { useState } from "react";
+import Script from "next/script";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 
-type SubmissionState = "idle" | "sending" | "sent" | "error";
+type SubmissionState = "idle" | "sending" | "sent" | "error" | "unverified";
+
+type TurnstileApi = {
+  render: (container: HTMLElement, options: Record<string, unknown>) => string;
+  reset: (widgetId: string) => void;
+  remove: (widgetId: string) => void;
+};
+
+declare global {
+  interface Window {
+    turnstile?: TurnstileApi;
+  }
+}
+
+const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 export default function ContactForm() {
   const [state, setState] = useState<SubmissionState>("idle");
+  const [turnstileReady, setTurnstileReady] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileContainer = useRef<HTMLDivElement>(null);
+  const turnstileWidget = useRef<string | null>(null);
+
+  useEffect(() => {
+    const container = turnstileContainer.current;
+    if (!turnstileReady || !turnstileSiteKey || !container || !window.turnstile) {
+      return;
+    }
+
+    const widgetId = window.turnstile.render(container, {
+      sitekey: turnstileSiteKey,
+      action: "contact",
+      theme: "light",
+      size: "flexible",
+      "response-field": false,
+      callback: (token: string) => setTurnstileToken(token),
+      "expired-callback": () => setTurnstileToken(""),
+      "error-callback": () => setTurnstileToken(""),
+    });
+    turnstileWidget.current = widgetId;
+
+    return () => {
+      window.turnstile?.remove(widgetId);
+      turnstileWidget.current = null;
+    };
+  }, [turnstileReady]);
+
+  const resetTurnstile = useCallback(() => {
+    setTurnstileToken("");
+    if (turnstileWidget.current) {
+      window.turnstile?.reset(turnstileWidget.current);
+    }
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!turnstileToken) {
+      setState("unverified");
+      return;
+    }
+
     setState("sending");
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const payload = Object.fromEntries(formData.entries());
+    const payload = {
+      ...Object.fromEntries(formData.entries()),
+      turnstileToken,
+    };
 
     try {
       const response = await fetch("/api/contact", {
@@ -32,6 +91,8 @@ export default function ContactForm() {
       setState("sent");
     } catch {
       setState("error");
+    } finally {
+      resetTurnstile();
     }
   }
 
@@ -78,14 +139,25 @@ export default function ContactForm() {
         </label>
         <label className="contact-form__honeypot" aria-hidden="true">
           Leave this field empty
-          <input name="website" type="text" tabIndex={-1} autoComplete="off" />
+          <input name="hp_extra" type="text" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
+      {turnstileSiteKey && (
+        <>
+          <Script
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+            strategy="afterInteractive"
+            onReady={() => setTurnstileReady(true)}
+          />
+          <div className="contact-form__turnstile" ref={turnstileContainer} />
+        </>
+      )}
       <button className="button button--plum" type="submit" disabled={state === "sending"}>
         {state === "sending" ? "Sending…" : "Send your inquiry"}
       </button>
       <p className={`contact-form__status contact-form__status--${state}`} aria-live="polite" role="status">
         {state === "sent" && "Thanks for your message. I’ll be in touch."}
+        {state === "unverified" && "Please complete the security check above, then send your inquiry."}
         {state === "error" && "Your message didn’t send. Please try again, or contact the studio directly."}
       </p>
       <p className="contact-form__privacy">

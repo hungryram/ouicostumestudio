@@ -36,10 +36,24 @@ export default function PrivacyPage() {
             .
           </p>
           <p>
-            This website does not currently offer newsletter subscriptions or
-            use advertising or analytics tools. The website hosting provider
-            may process basic technical information to deliver and protect the
-            site.
+            To protect the contact form from spam, it uses Cloudflare
+            Turnstile, which checks technical signals from your browser to
+            confirm a person is sending the message. Learn more in the{" "}
+            <a href="https://www.cloudflare.com/turnstile-privacy-policy/">
+              Turnstile privacy addendum
+            </a>
+            .
+          </p>
+          <p>
+            This website uses Google Analytics to understand how visitors find
+            and use the site, such as which pages are viewed. Google may set
+            cookies to collect this information. You can learn more in{" "}
+            <a href="https://policies.google.com/technologies/partner-sites">
+              how Google uses information from sites that use its services
+            </a>
+            . The website does not offer newsletter subscriptions or use
+            advertising tools. The hosting provider may process basic technical
+            information to deliver and protect the site.
           </p>
           <p>
             If you have a question about information you&apos;ve shared with

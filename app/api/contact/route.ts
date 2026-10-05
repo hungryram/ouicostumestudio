@@ -8,6 +8,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function POST(request: Request) {
   const contentType = request.headers.get("content-type") ?? "";
   if (!contentType.toLowerCase().includes("application/json")) {
@@ -31,7 +40,8 @@ export async function POST(request: Request) {
   }
 
   const submission = payload;
-  if (getString(submission.website)) {
+  if (getString(submission.hp_extra)) {
+    console.warn("Contact submission rejected by the spam trap.");
     return Response.json({ error: "The submission could not be accepted." }, { status: 400 });
   }
 
@@ -55,32 +65,136 @@ export async function POST(request: Request) {
     !message ||
     message.length > 5000
   ) {
+    console.warn("Contact submission failed validation.");
     return Response.json({ error: "Please check the required fields and try again." }, { status: 400 });
   }
 
   const serverToken = process.env.POSTMARK_SERVER_TOKEN;
-  const sender = process.env.POSTMARK_FROM_EMAIL;
-  const recipient = process.env.CONTACT_TO_EMAIL;
+  const sender = process.env.POSTMARK_FROM_EMAIL?.trim();
+  const recipients = (process.env.CONTACT_TO_EMAIL ?? "")
+    .split(",")
+    .map((address) => address.trim())
+    .filter(Boolean);
 
   if (
     !serverToken ||
     !sender ||
     !emailPattern.test(sender) ||
-    !recipient ||
-    !emailPattern.test(recipient)
+    recipients.length === 0 ||
+    !recipients.every((address) => emailPattern.test(address))
   ) {
     console.error("Contact form delivery is not configured. Set the required Postmark environment variables.");
     return Response.json({ error: "The contact form is temporarily unavailable." }, { status: 503 });
   }
 
+  const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+  if (!turnstileSecret) {
+    console.error("Contact form spam protection is not configured. Set TURNSTILE_SECRET_KEY.");
+    return Response.json({ error: "The contact form is temporarily unavailable." }, { status: 503 });
+  }
+
+  const turnstileToken = getString(submission.turnstileToken);
+  if (!turnstileToken || turnstileToken.length > 2048) {
+    console.warn("Contact submission is missing a Turnstile token.");
+    return Response.json({ error: "Please complete the security check." }, { status: 400 });
+  }
+
+  const remoteIp =
+    request.headers.get("cf-connecting-ip") ??
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+
+  try {
+    const verification = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: turnstileSecret,
+        response: turnstileToken,
+        ...(remoteIp ? { remoteip: remoteIp } : {}),
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    const outcome: unknown = await verification.json();
+
+    if (!isRecord(outcome) || outcome.success !== true) {
+      console.warn("Contact submission failed Turnstile verification.", {
+        errorCodes: isRecord(outcome) ? outcome["error-codes"] : undefined,
+      });
+      return Response.json({ error: "Please complete the security check." }, { status: 400 });
+    }
+  } catch (error) {
+    console.error("Turnstile verification request failed.", error);
+    return Response.json({ error: "The contact form is temporarily unavailable." }, { status: 502 });
+  }
+
+  const projectLabel = projectType || "Not specified";
+  const subject = `New Costume Inquiry from ${name}`;
+  const replySubject = encodeURIComponent("Re: Your Oui Costume Studio inquiry");
+  const replyHref = `mailto:${encodeURIComponent(email)}?subject=${replySubject}`;
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeProject = escapeHtml(projectLabel);
+  const safeMessage = escapeHtml(message).replace(/\r?\n/g, "<br>");
+
   const textBody = [
+    subject,
+    "",
     `Name: ${name}`,
     `Email: ${email}`,
-    `Project type: ${projectType || "Not specified"}`,
+    `Project type: ${projectLabel}`,
     "",
-    "Message:",
+    "Project details:",
     message,
+    "",
+    "Reply to this email to respond directly.",
+    "",
+    "Powered by hungryram.com (https://www.hungryram.com)",
   ].join("\n");
+
+  const detailRow = (label: string, value: string) => `
+              <tr>
+                <td style="padding:10px 0;border-bottom:1px solid #ded6cf;color:#70666b;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;width:130px;vertical-align:top;">${label}</td>
+                <td style="padding:10px 0;border-bottom:1px solid #ded6cf;color:#30252c;font-size:16px;vertical-align:top;">${value}</td>
+              </tr>`;
+
+  const htmlBody = `<!doctype html>
+<html lang="en">
+  <body style="margin:0;padding:0;background:#f8f5f0;font-family:Georgia,'Times New Roman',serif;color:#30252c;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f5f0;padding:32px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border:1px solid #ded6cf;">
+            <tr>
+              <td style="background:#69445d;padding:28px 32px;color:#ffffff;">
+                <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#f1dce4;">Oui Costume Studio</p>
+                <h1 style="margin:0;font-size:26px;font-weight:normal;line-height:1.25;">New inquiry from ${safeName}</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px 32px 8px;font-family:Arial,Helvetica,sans-serif;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${detailRow("Name", safeName)}${detailRow("Email", `<a href="mailto:${safeEmail}" style="color:#69445d;">${safeEmail}</a>`)}${detailRow("Project", safeProject)}
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 32px 8px;font-family:Arial,Helvetica,sans-serif;">
+                <p style="margin:0 0 10px;color:#70666b;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;">Project details</p>
+                <div style="background:#f8f5f0;border-left:3px solid #bd8496;padding:16px 18px;color:#30252c;font-size:16px;line-height:1.6;">${safeMessage}</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:24px 32px 32px;font-family:Arial,Helvetica,sans-serif;">
+                <a href="${replyHref}" style="display:inline-block;background:#69445d;color:#ffffff;text-decoration:none;padding:12px 22px;font-size:13px;font-weight:bold;letter-spacing:0.12em;text-transform:uppercase;">Reply to ${safeName}</a>
+                <p style="margin:14px 0 0;color:#70666b;font-size:14px;">Or simply reply to this email.</p>
+              </td>
+            </tr>
+          </table>
+          <p style="margin:20px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#70666b;">Powered by <a href="https://www.hungryram.com" style="color:#69445d;">hungryram.com</a></p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
 
   let response: Response;
   try {
@@ -92,11 +206,12 @@ export async function POST(request: Request) {
         "X-Postmark-Server-Token": serverToken,
       },
       body: JSON.stringify({
-        From: sender,
-        To: recipient,
+        From: `"Oui Costume Studio" <${sender}>`,
+        To: recipients.join(", "),
         ReplyTo: email,
-        Subject: "New costume inquiry from Oui Costume Studio",
+        Subject: subject,
         TextBody: textBody,
+        HtmlBody: htmlBody,
         MessageStream: "outbound",
       }),
       signal: AbortSignal.timeout(10_000),
@@ -107,7 +222,12 @@ export async function POST(request: Request) {
   }
 
   if (!response.ok) {
-    console.error("Postmark rejected a contact email request.", { status: response.status });
+    const detail = await response.json().catch(() => null);
+    console.error("Postmark rejected a contact email request.", {
+      status: response.status,
+      errorCode: isRecord(detail) ? detail.ErrorCode : undefined,
+      message: isRecord(detail) ? detail.Message : undefined,
+    });
     return Response.json({ error: "The contact form is temporarily unavailable." }, { status: 502 });
   }
 
