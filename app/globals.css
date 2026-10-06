@@ -103,8 +103,8 @@ a:focus-visible {
 }
 
 .wordmark--footer .wordmark__logo {
-  filter: invert(1);
-  mix-blend-mode: screen;
+  filter: none;
+  mix-blend-mode: normal;
 }
 
 .main-nav {

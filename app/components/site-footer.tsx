@@ -7,7 +7,7 @@ export default function SiteFooter() {
       <Link className="wordmark wordmark--footer" href="/" aria-label="Oui Costume Studio home">
         <Image
           className="wordmark__logo"
-          src="/images/logo.png"
+          src="/images/white-logo.png"
           alt=""
           width={1181}
           height={890}
