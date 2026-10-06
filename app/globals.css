@@ -917,6 +917,7 @@ p {
 .wordmark--footer {
   display: flex;
   margin: 0 auto;
+  mix-blend-mode: normal;
 }
 
 .site-footer__tagline {
