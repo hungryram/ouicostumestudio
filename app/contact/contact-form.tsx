@@ -20,9 +20,10 @@ declare global {
 
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
-export default function ContactForm() {
+export default function ContactForm({ waitlist = false }: { waitlist?: boolean }) {
   const [state, setState] = useState<SubmissionState>("idle");
   const [confirmationSent, setConfirmationSent] = useState(true);
+  const [studioNotificationSent, setStudioNotificationSent] = useState(true);
   const [turnstileReady, setTurnstileReady] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileContainer = useRef<HTMLDivElement>(null);
@@ -36,7 +37,7 @@ export default function ContactForm() {
 
     const widgetId = window.turnstile.render(container, {
       sitekey: turnstileSiteKey,
-      action: "contact",
+      action: waitlist ? "waitlist" : "contact",
       theme: "light",
       size: "flexible",
       "response-field": false,
@@ -50,7 +51,7 @@ export default function ContactForm() {
       window.turnstile?.remove(widgetId);
       turnstileWidget.current = null;
     };
-  }, [turnstileReady]);
+  }, [turnstileReady, waitlist]);
 
   const resetTurnstile = useCallback(() => {
     setTurnstileToken("");
@@ -77,7 +78,7 @@ export default function ContactForm() {
     };
 
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch(waitlist ? "/api/waitlist" : "/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -88,8 +89,9 @@ export default function ContactForm() {
         return;
       }
 
-      const result: { confirmationSent?: boolean } = await response.json();
+      const result: { confirmationSent?: boolean; studioNotificationSent?: boolean } = await response.json();
       setConfirmationSent(result.confirmationSent !== false);
+      setStudioNotificationSent(result.studioNotificationSent !== false);
       form.reset();
       setState("sent");
     } catch {
@@ -101,6 +103,24 @@ export default function ContactForm() {
 
   return (
     <form className="contact-form" onSubmit={handleSubmit}>
+      {!waitlist && (
+        <p className="contact-form__intro">
+          Interested in a future costume project?{" "}
+          <a className="contact-content__social-link" href="/waitlist">
+            Join the waitlist
+          </a>{" "}
+          and share your project details there. A general message does not add
+          you to the waitlist.
+        </p>
+      )}
+      {waitlist && (
+        <p className="contact-form__intro">
+          <strong>Fully booked — bookings are currently closed.</strong>{" "}
+          Bookings will open March–June 2027.{" "}
+          Join the waitlist for a future project. Space will be limited, and
+          we&apos;ll be in touch to let you know whether we can take on your project.
+        </p>
+      )}
       <div className="contact-form__fields">
         <label>
           Your name
@@ -122,38 +142,42 @@ export default function ContactForm() {
             required
           />
         </label>
+        {waitlist && (
+          <>
+            <label className="contact-form__full">
+              What type of project is this?
+              <select name="projectType" defaultValue="">
+                <option value="">Choose a project type (optional)</option>
+                <option value="Jazz">Jazz</option>
+                <option value="Contemporary">Contemporary</option>
+                <option value="Dancewear or performance costume">Dancewear or performance costume</option>
+                <option value="Special occasion">Special occasion</option>
+                <option value="Something else">Something else</option>
+              </select>
+            </label>
+            <label className="contact-form__full">
+              Is it for a group or solo?
+              <select name="projectFormat" defaultValue="">
+                <option value="">Choose a format (optional)</option>
+                <option value="Group">Group</option>
+                <option value="Solo">Solo</option>
+              </select>
+            </label>
+            <label className="contact-form__full">
+              What price range are you considering?
+              <select name="priceRange" defaultValue="">
+                <option value="">Choose a price range (optional)</option>
+                <option value="$250–$350">$250–$350</option>
+                <option value="$350–$500">$350–$500</option>
+                <option value="$500–$1,000">$500–$1,000</option>
+                <option value="$1,000+">$1,000+</option>
+                <option value="Not sure yet">Not sure yet</option>
+              </select>
+            </label>
+          </>
+        )}
         <label className="contact-form__full">
-          What type of project is this?
-          <select name="projectType" defaultValue="">
-            <option value="">Choose a project type (optional)</option>
-            <option value="Jazz">Jazz</option>
-            <option value="Contemporary">Contemporary</option>
-            <option value="Dancewear or performance costume">Dancewear or performance costume</option>
-            <option value="Special occasion">Special occasion</option>
-            <option value="Something else">Something else</option>
-          </select>
-        </label>
-        <label className="contact-form__full">
-          Is it for a group or solo?
-          <select name="projectFormat" defaultValue="">
-            <option value="">Choose a format (optional)</option>
-            <option value="Group">Group</option>
-            <option value="Solo">Solo</option>
-          </select>
-        </label>
-        <label className="contact-form__full">
-          What price range are you considering?
-          <select name="priceRange" defaultValue="">
-            <option value="">Choose a price range (optional)</option>
-            <option value="$250–$350">$250–$350</option>
-            <option value="$350–$500">$350–$500</option>
-            <option value="$500–$1,000">$500–$1,000</option>
-            <option value="$1,000+">$1,000+</option>
-            <option value="Not sure yet">Not sure yet</option>
-          </select>
-        </label>
-        <label className="contact-form__full">
-          Project details
+          {waitlist ? "Project details" : "Your message"}
           <textarea
             name="message"
             rows={5}
@@ -177,17 +201,32 @@ export default function ContactForm() {
         </>
       )}
       <button className="button button--plum" type="submit" disabled={state === "sending"}>
-        {state === "sending" ? "Sending…" : "Send your inquiry"}
+        {state === "sending" ? "Sending…" : waitlist ? "Join the waitlist" : "Send your message"}
       </button>
       <p className={`contact-form__status contact-form__status--${state}`} aria-live="polite" role="status">
-        {state === "sent" && (confirmationSent
+        {state === "sent" && waitlist && <>
+          You&apos;re on the waitlist! We&apos;ll review your project as space becomes
+          available and be in touch about next steps.{" "}
+          {confirmationSent
+            ? "A confirmation email is on its way."
+            : "The confirmation email couldn’t be sent. There’s no need to submit again."}
+          {!studioNotificationSent && " Your details are saved, but the studio’s email notification couldn’t be sent."}
+        </>}
+        {state === "sent" && !waitlist && <>
+          {confirmationSent
           ? "Thanks for your message. A confirmation email is on its way, and I’ll be in touch."
-          : "Your inquiry was received, but the confirmation email couldn’t be sent. There’s no need to submit again; I’ll be in touch.")}
+          : "Your inquiry was received, but the confirmation email couldn’t be sent. There’s no need to submit again; I’ll be in touch."}
+          {!studioNotificationSent && " Your message is saved, but the studio’s email notification couldn’t be sent. There’s no need to submit again."}
+        </>}
         {state === "unverified" && "Please complete the security check above, then send your inquiry."}
-        {state === "error" && "Your message didn’t send. Please try again, or contact the studio directly."}
+        {state === "error" && (waitlist
+          ? "We couldn’t confirm your waitlist entry. Please contact the studio directly before submitting again."
+          : "We couldn’t confirm saving your message. Please contact the studio directly before submitting again.")}
       </p>
       <p className="contact-form__privacy">
-        Your details are only used to respond to your inquiry.
+        {waitlist
+          ? "Your details are stored in the studio’s private Google Sheet to manage the waitlist and contact you about your project."
+          : "Your message is stored in the studio’s private Google Sheet and used to respond to your inquiry."}
       </p>
     </form>
   );

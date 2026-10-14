@@ -20,9 +20,11 @@ Gallery images support cursor-following 2.5x detail zoom. On touch devices, tap
 to zoom, drag to inspect, and tap again to reset. Keyboard users can toggle
 with Enter or Space, pan with arrow keys, and reset with Escape.
 
-Availability messaging welcomes inquiries for any preferred date without
-promising an open production slot. The current schedule is explained on the
-Contact page; update that note when the studio's booking window changes.
+Bookings are currently closed. `/contact` has a basic form for general messages;
+`/waitlist` has the project details form for joining the waitlist. The sitewide announcement, Contact
+page and form, FAQ, and confirmation email disclose this status and the
+March–June 2027 booking window without promising a slot. Update these when
+bookings reopen.
 
 ## Getting started
 
@@ -44,7 +46,7 @@ Copy `.env.example` to `.env.local` and set:
   multiple addresses with commas.
 
 Inquiries are sent from "Oui Costume Studio" using the `POSTMARK_FROM_EMAIL` address.
-After Postmark accepts the studio inquiry, a separate branded confirmation is
+After the inquiry is saved to Google Sheets, a separate branded confirmation is
 sent to the submitter, with replies directed to the studio inbox(es). Both
 emails include a "Powered by hungryram.com" link. The confirmation acknowledges
 receipt only, not a booking or production availability. If confirmation sending
@@ -61,6 +63,41 @@ Add `localhost` and the production domain to the widget's hostnames in Cloudflar
 Keep `.env.local` private; it is excluded from version control. The contact
 form returns a visible error until all of these settings are configured.
 
+## Waitlist and Google Sheets
+
+Both forms use the same Postmark, Turnstile, and service-account settings.
+General messages are saved to a separate `Contact` tab in the same spreadsheet.
+Submissions are saved first, then a studio notification and a separate confirmation are sent. The waitlist
+confirmation acknowledges a waitlist entry, not a guaranteed booking.
+
+1. In Google Cloud, enable the Google Sheets API and create a service account.
+2. Create a JSON key for the service account. Keep the key private and outside
+   the repository; do not paste it into client code.
+3. Create a private spreadsheet with a tab named `Waitlist`. Set row 1 headers
+   to: `Submitted at (UTC)`, `Name`, `Email`, `Project type`, `Format`,
+   `Price range`, `Project details`, in columns A through G.
+   Add a `Contact` tab with row 1 headers: `Submitted at (UTC)`, `Name`,
+   `Email`, `Message`, in columns A through D.
+4. Share the spreadsheet with the service account's `client_email` as an Editor.
+   Do not make the spreadsheet public.
+5. Set these server-only environment variables locally and in hosting:
+   - `SHEETS_CLIENT_EMAIL`: the JSON key's `client_email`.
+   - `SHEETS_PRIVATE_KEY`: the JSON key's `private_key`;
+     literal `\n` line separators are supported.
+   - `GOOGLE_WAITLIST_SPREADSHEET_ID`: the ID between `/d/` and `/edit` in the
+     spreadsheet URL.
+   - `GOOGLE_WAITLIST_RANGE`: `'Waitlist'!A:G` (include the tab name).
+   - `GOOGLE_CONTACT_RANGE`: `'Contact'!A:D` (defaults to this if omitted).
+     Both tabs use `GOOGLE_WAITLIST_SPREADSHEET_ID`.
+6. Restart locally or redeploy after setting the variables.
+
+Both forms fail visibly if Sheets is unconfigured or saving cannot be
+confirmed; no emails are sent in that case. If the submission is
+saved but an email fails, the form reports which email failed and advises
+against submitting again. Failed requests are logged without service-account
+credentials. Appends use RAW values so user text is not evaluated as formulas,
+and automatic append retries are disabled to avoid duplicate rows.
+
 The newsletter signup has been omitted. The privacy page should be reviewed
 against the final hosting and Postmark account settings before launch.
 
@@ -76,4 +113,5 @@ preferences remove the folds and link animation and shorten the overlay transiti
 ```bash
 pnpm lint
 pnpm build
+node --test tests/forms.test.mjs
 ```

@@ -88,6 +88,11 @@ a:focus-visible {
   border-bottom: 1px solid var(--line);
 }
 
+.announcement a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .wordmark {
   display: inline-flex;
   width: fit-content;
@@ -133,6 +138,12 @@ a:focus-visible {
   color: var(--rose);
 }
 
+.header-actions {
+  display: flex;
+  justify-self: end;
+  gap: 10px;
+}
+
 .header-cta {
   justify-self: end;
   padding: 13px 17px;
@@ -169,7 +180,7 @@ a:focus-visible {
   margin: 0;
   padding: 80px 24px;
   border: 0;
-  background: #29222b;
+  background: #0c0b0d;
   color: white;
   overflow-y: auto;
 }
@@ -187,8 +198,8 @@ a:focus-visible {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(105deg, transparent 12%, #ffffff0d 27%, #20101a1a 40%, transparent 54%, #ffffff0a 70%, transparent 88%),
-    linear-gradient(180deg, transparent 35%, #20101a24 56%, #ffffff12 64%, transparent 76%);
+    linear-gradient(105deg, transparent 12%, #ffffff0d 27%, #0000001a 40%, transparent 54%, #ffffff0a 70%, transparent 88%),
+    linear-gradient(180deg, transparent 35%, #00000024 56%, #ffffff12 64%, transparent 76%);
   content: "";
   pointer-events: none;
   animation: mobile-menu-folds 1100ms cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -1443,6 +1454,13 @@ p {
   background: #fffdfa;
 }
 
+.contact-form__intro {
+  margin: 0 0 36px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
 .contact-form__fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1822,7 +1840,7 @@ p {
     display: none;
   }
 
-  .header-cta {
+  .header-actions {
     display: none;
   }
 

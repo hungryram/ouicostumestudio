@@ -66,18 +66,21 @@ export default function FaqPage() {
             </p>
             <Accordion title="How do I begin a custom order?" defaultOpen>
               <p>
-                Send an inquiry through the <a href="/contact">contact page</a>.
-                We&apos;ll discuss your requirements and timing before
-                deciding how to move forward. You don&apos;t need to have
-                every design detail settled.
+                Share your project through the <a href="/waitlist">waitlist page</a>.
+                The studio is currently fully booked, so new bookings are
+                closed. Bookings will open March–June 2027. The waitlist remains
+                open for future projects. You don&apos;t need to have every
+                design detail settled.
               </p>
             </Accordion>
             <Accordion title="Can I inquire if your schedule is full?">
               <p>
-                Absolutely. Send your preferred date even if it falls outside
-                the current booking window. An inquiry isn&apos;t a booking
-                commitment; it gives us a chance to check availability and
-                discuss whether your timeline can work.
+                Absolutely. Although bookings are currently closed, you can
+                still send questions or ideas for a future project. Space will
+                be limited, and we&apos;ll be in touch to let you know whether we
+                can take on your project. Use the{" "}
+                <a href="/contact">contact form</a> for general questions or the{" "}
+                <a href="/waitlist">waitlist form</a> for a future costume project.
               </p>
             </Accordion>
             <Accordion title="What kinds of pieces can the studio make?">
@@ -91,10 +94,10 @@ export default function FaqPage() {
                 Basic costumes in standard sizing start at $250, while custom
                 costumes start at $350. Most designs range from $375 to $500.
                 Each piece is handmade with premium fabric. Standard delivery
-                takes 4–6 weeks from payment. Rush orders may be available for
-                an additional charge, with delivery in 2–4 weeks from payment.
-                Timing and availability are confirmed before an order moves
-                forward.
+                takes 4–6 weeks from payment for accepted orders. When bookings
+                are open, rush orders may be available for an additional charge,
+                with delivery in 2–4 weeks from payment. The studio is currently
+                fully booked and not accepting new bookings.
               </p>
             </Accordion>
             <Accordion title="What should I include in my first message?">

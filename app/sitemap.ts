@@ -9,6 +9,7 @@ const routes = [
   "/work/photoshoot",
   "/work/costumes",
   "/contact",
+  "/waitlist",
   "/faq",
   "/private-policy",
 ];

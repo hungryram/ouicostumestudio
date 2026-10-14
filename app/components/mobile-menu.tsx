@@ -90,7 +90,8 @@ export default function MobileMenu() {
           <Link href="/work" onClick={close}>Our work</Link>
           <Link href="/about" onClick={close}>The studio</Link>
           <Link href="/faq" onClick={close}>FAQ</Link>
-          <Link href="/contact" onClick={close}>Let&apos;s talk</Link>
+          <Link href="/waitlist" onClick={close}>Waitlist</Link>
+          <Link href="/contact" onClick={close}>Contact</Link>
         </nav>
       </dialog>
     </>

@@ -21,6 +21,7 @@ export default function SiteFooter() {
         <a href="/about">The studio</a>
         <a href="/faq">FAQ</a>
         <a href="/contact">Contact</a>
+        <a href="/waitlist">Waitlist</a>
         <a href="/private-policy">Privacy</a>
       </nav>
       <div className="site-footer__bottom">

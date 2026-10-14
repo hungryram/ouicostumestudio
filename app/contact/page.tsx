@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
   title: "Discuss Your Costume Idea | Contact Oui Costume Studio",
   description:
-    "Share your costume idea, occasion, and preferred date with Oui. Inquiries are welcome for dancewear, performance costumes, and special occasions.",
+    "Oui Costume Studio is currently fully booked. Bookings open March–June 2027. Our contact form remains open for questions and future costume inquiries.",
 };
 
 export default function ContactPage() {
@@ -21,44 +21,24 @@ export default function ContactPage() {
             CONTACT
           </p>
           <h1>
-            Let&apos;s hear
+            Let&apos;s
             <br />
-            your idea.
+            talk.
           </h1>
           <p>
-            Whether your plans are set or you&apos;re still exploring, you&apos;re
-            welcome to reach out. I&apos;ll review your project and preferred
-            date before we discuss availability and next steps.
+            The studio is fully booked, and bookings are currently closed.
+            Bookings will open March–June 2027.{" "}
+            You&apos;re still welcome to send a question or a general message.
           </p>
         </section>
 
         <section className="contact-content section-shell">
           <div className="contact-content__aside">
-            <h2>A few details to get us started.</h2>
+            <h2>Have a question for Oui?</h2>
             <p>
-              Include who the piece is for, the occasion, and when you hope
-              to have it. If you have colors, a budget, or references in mind,
-              those are helpful too.
+              Use this form for general questions, existing orders, or anything
+              you&apos;d like to ask the studio.
             </p>
-            <p>
-              My current season is fully scheduled, with books planned to
-              reopen in March 2027 for March through June orders. Please still
-              send your inquiry, whatever your date. I&apos;ll let you know
-              what&apos;s possible before you make any plans around an order.
-            </p>
-            <div className="contact-content__note contact-content__note--details">
-              <span>PRICING &amp; TIMING</span>
-              <p>
-                Basic costumes in standard sizing start at $250; custom
-                costumes start at $350. Most designs range from $375 to $500.
-                Every piece is handmade with premium fabric.
-              </p>
-              <p>
-                Standard delivery is 4–6 weeks from payment. Rush orders may
-                be available for an additional charge, with delivery in 2–4
-                weeks from payment.
-              </p>
-            </div>
             <div className="contact-content__note">
               <span>ON SOCIAL MEDIA</span>
               <p>

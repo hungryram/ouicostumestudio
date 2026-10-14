@@ -28,6 +28,16 @@ export default function PrivacyPage() {
             and discuss your project.
           </p>
           <p>
+            General contact messages, including your name, email, and message,
+            are stored in a separate Contact tab in the studio&apos;s private
+            Google Sheet. When you join the waitlist, your name, email, project type,
+            group or solo format, budget range, and project details are also
+            stored in a private Google Sheet used by the studio to manage
+            future project inquiries. Google processes this information to
+            provide the service. See the{" "}
+            <a href="https://policies.google.com/privacy">Google privacy policy</a>.
+          </p>
+          <p>
             Contact-form messages are transmitted through Postmark, our
             transactional email service. Postmark processes that information
             to deliver the message. You can learn more in the{" "}

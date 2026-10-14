@@ -7,7 +7,10 @@ export default function SiteHeader() {
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
       <div className="announcement">
-        Have a costume in mind? Inquiries are always welcome.
+        <span>
+          Fully booked — bookings open March–June 2027.{" "}
+          <Link href="/waitlist">Join the waitlist</Link>
+        </span>
       </div>
       <header className="site-header">
         <Link className="wordmark" href="/" aria-label="Oui Costume Studio home">
@@ -25,9 +28,14 @@ export default function SiteHeader() {
           <a href="/about">The studio</a>
           <a href="/faq">FAQ</a>
         </nav>
-        <a className="header-cta" href="/contact">
-          Let&apos;s talk
-        </a>
+        <div className="header-actions">
+          <Link className="header-cta" href="/waitlist">
+            Waitlist
+          </Link>
+          <Link className="header-cta" href="/contact">
+            Contact
+          </Link>
+        </div>
         <MobileMenu />
       </header>
     </>
