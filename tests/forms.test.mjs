@@ -49,10 +49,12 @@ test("Sheets config reads the renamed credentials and expands key newlines", () 
 });
 
 function harness({ sheetConfigured = true, sheetFails = false, studioFails = false,
-  confirmationFails = false, spam = false } = {}) {
+  confirmationFails = false, spam = false, crmFails = false, crmThrows = false,
+  crmUrl = "https://app.hungryhub.io/api/public/forms/test?secret=test-secret" } = {}) {
   const events = [];
   const emails = [];
   const logs = [];
+  const leads = [];
   const sheet = {
     getWaitlistSheetConfig: () => sheetConfigured ? {} : null,
     getContactSheetConfig: () => sheetConfigured ? {} : null,
@@ -76,12 +78,23 @@ function harness({ sheetConfigured = true, sheetFails = false, studioFails = fal
       POSTMARK_FROM_EMAIL: "sender@example.com",
       CONTACT_TO_EMAIL: "studio@example.com, second@example.com",
       TURNSTILE_SECRET_KEY: "test",
+      HUNGRYHUB_FORM_URL: crmUrl,
     } },
     console: { warn: (...args) => logs.push(args), error: (...args) => logs.push(args) },
     fetch: async (url, options) => {
       if (url.includes("siteverify")) {
         events.push("verify");
         return Response.json({ success: !spam });
+      }
+      if (url.startsWith("https://app.hungryhub.io/")) {
+        events.push("crm");
+        leads.push(JSON.parse(options.body));
+        assert.equal(options.method, "POST");
+        assert.equal(options.headers["Content-Type"], "application/json");
+        assert.equal(options.redirect, "error");
+        assert.ok(options.signal instanceof AbortSignal);
+        if (crmThrows) throw new Error(`Request failed: ${url}`);
+        return Response.json({ success: !crmFails }, { status: crmFails ? 503 : 200 });
       }
       const email = JSON.parse(options.body);
       emails.push(email);
@@ -92,7 +105,7 @@ function harness({ sheetConfigured = true, sheetFails = false, studioFails = fal
     },
   });
   return {
-    events, emails, logs,
+    events, emails, logs, leads,
     async submit(waitlist, overrides = {}) {
       return handler.handleFormSubmission(new Request("http://localhost/api/form", {
         method: "POST",
@@ -113,7 +126,11 @@ test("general contact saves separately before emails and does not claim waitlist
     projectType: undefined, projectFormat: undefined,
   });
   assert.equal(response.status, 200);
-  assert.deepEqual(h.events, ["verify", "contact-sheet", "studio", "confirmation"]);
+  assert.deepEqual(h.events, ["verify", "contact-sheet", "crm", "studio", "confirmation"]);
+  assert.deepEqual(h.leads, [{
+    name: "Alex <Test>", email: "alex@example.com", message: "=1+1",
+    source: "General",
+  }]);
   assert.match(h.emails[0].Subject, /New Contact Message/);
   assert.doesNotMatch(h.emails[0].HtmlBody, />Format</);
   assert.match(h.emails[1].TextBody, /does not add you to the waitlist/);
@@ -123,9 +140,14 @@ test("waitlist saves first and sends branded waitlist emails", async () => {
   const h = harness();
   const response = await h.submit(true);
   assert.deepEqual(await response.json(), {
-    sent: true, confirmationSent: true, studioNotificationSent: true,
+    sent: true, confirmationSent: true, studioNotificationSent: true, crmSent: true,
   });
-  assert.deepEqual(h.events, ["verify", "sheet", "studio", "confirmation"]);
+  assert.deepEqual(h.events, ["verify", "sheet", "crm", "studio", "confirmation"]);
+  assert.deepEqual(h.leads, [{
+    name: "Alex <Test>", email: "alex@example.com", message: "=1+1",
+    source: "Waitlist",
+    type_of_project: "Jazz", group_or_solo: "Solo", price_range: "", project_details: "=1+1",
+  }]);
   assert.equal(h.emails[0].To, "studio@example.com, second@example.com");
   assert.match(h.emails[0].Subject, /New Waitlist Entry/);
   assert.match(h.emails[0].TextBody, /Format: Solo/);
@@ -152,6 +174,7 @@ test("both forms reject missing Sheets config and unconfirmed saves without send
       const response = await h.submit(waitlist);
       assert.ok(response.status >= 500);
       assert.equal(h.emails.length, 0);
+      assert.equal(h.leads.length, 0);
       assert.ok(h.logs.length);
     }
   }
@@ -167,6 +190,7 @@ test("both forms remain accepted after saving if either email fails", async () =
       assert.equal(result.sent, true);
       assert.equal(result.studioNotificationSent, !options.studioFails);
       assert.equal(result.confirmationSent, !options.confirmationFails);
+      assert.equal(result.crmSent, true);
       assert.equal(h.events.filter((event) => event === (waitlist ? "sheet" : "contact-sheet")).length, 1);
       assert.ok(h.logs.length);
     }
@@ -182,7 +206,42 @@ test("spam and invalid fields do not save rows or send emails", async () => {
     assert.equal(response.status, 400);
     assert.ok(!h.events.includes("sheet"));
     assert.equal(h.emails.length, 0);
+    assert.equal(h.leads.length, 0);
   }
+});
+
+test("CRM failures preserve saved submissions and emails, with sanitized operator warnings", async () => {
+  for (const waitlist of [false, true]) {
+    for (const options of [
+      { crmFails: true }, { crmThrows: true }, { crmUrl: "" },
+      { crmUrl: "https://example.com/api/public/forms/test?secret=test-secret" },
+      { crmUrl: "invalid-url-test-secret" },
+    ]) {
+      const h = harness(options);
+      const response = await h.submit(waitlist);
+      assert.equal(response.status, 200);
+      assert.deepEqual(await response.json(), {
+        sent: true, confirmationSent: true, studioNotificationSent: true, crmSent: false,
+      });
+      assert.equal(h.emails.length, 2);
+      assert.ok(h.events.includes(waitlist ? "sheet" : "contact-sheet"));
+      assert.ok(h.events.filter((event) => event === "crm").length <= 1);
+      assert.match(h.emails[0].TextBody, /CRM sync could not be confirmed/);
+      assert.match(h.emails[0].HtmlBody, /CRM sync could not be confirmed/);
+      assert.ok(h.logs.length);
+      assert.doesNotMatch(JSON.stringify(h.logs), /test-secret/);
+    }
+  }
+});
+
+test("waitlist CRM fields retain the selected project, format, and price range", async () => {
+  const h = harness();
+  const priceRange = `$350${String.fromCharCode(0x2013)}$500`;
+  await h.submit(true, { priceRange });
+  assert.equal(h.leads[0].price_range, priceRange);
+  assert.equal(h.leads[0].type_of_project, "Jazz");
+  assert.equal(h.leads[0].group_or_solo, "Solo");
+  assert.equal(h.leads[0].project_details, "=1+1");
 });
 
 test("Sheets uses RAW values, no retries, and distinct seven- and four-column tabs", async () => {

@@ -203,6 +203,49 @@ export async function handleFormSubmission(request: Request, waitlist: boolean) 
     return Response.json({ error: "We couldn’t confirm saving your submission. Please contact the studio directly." }, { status: 502 });
   }
 
+  let crmSent = false;
+  try {
+    const crmUrl = process.env.HUNGRYHUB_FORM_URL?.trim();
+    if (!crmUrl) throw new Error("Missing CRM configuration");
+    const endpoint = new URL(crmUrl);
+    if (
+      endpoint.origin !== "https://app.hungryhub.io" ||
+      !endpoint.pathname.startsWith("/api/public/forms/") ||
+      !endpoint.searchParams.get("secret")
+    ) {
+      throw new Error("Invalid CRM configuration");
+    }
+    const response = await fetch(endpoint.href, {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        email,
+        message,
+        source: waitlist ? "Waitlist" : "General",
+        ...(waitlist ? {
+          type_of_project: projectType,
+          group_or_solo: projectFormat,
+          price_range: priceRange,
+          project_details: message,
+        } : {}),
+      }),
+      redirect: "error",
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!response.ok) {
+      console.error("HungryHub rejected the submission.", { status: response.status, waitlist });
+    } else {
+      crmSent = true;
+    }
+  } catch {
+    // Request errors can contain the secret URL; never log the error object.
+    console.error("HungryHub delivery failed. Check CRM configuration and availability.", { waitlist });
+  }
+  const crmWarning = crmSent
+    ? ""
+    : "CRM sync could not be confirmed. This submission is saved in Google Sheets; check HungryHub before adding it manually.";
+
   const projectLabel = projectType || "Not specified";
   const formatLabel = projectFormat || "Not specified";
   const priceRangeLabel = priceRange || "Not specified";
@@ -221,6 +264,7 @@ export async function handleFormSubmission(request: Request, waitlist: boolean) 
     "",
     `Name: ${name}`,
     `Email: ${email}`,
+    ...(crmWarning ? [crmWarning] : []),
     ...(waitlist ? [`Project type: ${projectLabel}`, `Format: ${formatLabel}`, `Price range: ${priceRangeLabel}`] : []),
     "",
     waitlist ? "Project details:" : "Message:",
@@ -243,6 +287,7 @@ export async function handleFormSubmission(request: Request, waitlist: boolean) 
   const htmlBody = renderEmail(`${waitlist ? "New waitlist entry" : "New contact message"} from ${safeName}`, `
             <tr>
               <td style="padding:28px 32px 8px;font-family:Arial,Helvetica,sans-serif;">
+                ${crmWarning ? `<p style="margin:0 0 16px;color:#171417;">${crmWarning}</p>` : ""}
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${detailRow("Name", safeName)}${detailRow("Email", `<a href="mailto:${safeEmail}" style="color:#171417;">${safeEmail}</a>`)}${projectRows}
                 </table>
               </td>
@@ -355,12 +400,12 @@ export async function handleFormSubmission(request: Request, waitlist: boolean) 
         errorCode: isRecord(detail) ? detail.ErrorCode : undefined,
         message: isRecord(detail) ? detail.Message : undefined,
       });
-      return Response.json({ sent: true, confirmationSent: false, studioNotificationSent });
+      return Response.json({ sent: true, confirmationSent: false, studioNotificationSent, crmSent });
     }
   } catch (error) {
     console.error("Postmark confirmation email request failed.", error);
-    return Response.json({ sent: true, confirmationSent: false, studioNotificationSent });
+    return Response.json({ sent: true, confirmationSent: false, studioNotificationSent, crmSent });
   }
 
-  return Response.json({ sent: true, confirmationSent: true, studioNotificationSent });
+  return Response.json({ sent: true, confirmationSent: true, studioNotificationSent, crmSent });
 }

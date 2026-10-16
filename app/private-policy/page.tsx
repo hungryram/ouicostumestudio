@@ -38,6 +38,11 @@ export default function PrivacyPage() {
             <a href="https://policies.google.com/privacy">Google privacy policy</a>.
           </p>
           <p>
+            General contact and waitlist submissions are also sent to HungryHub,
+            the studio&apos;s customer relationship management service, to manage
+            inquiries and follow up about your project.
+          </p>
+          <p>
             Contact-form messages are transmitted through Postmark, our
             transactional email service. Postmark processes that information
             to deliver the message. You can learn more in the{" "}

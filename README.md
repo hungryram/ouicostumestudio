@@ -98,6 +98,27 @@ against submitting again. Failed requests are logged without service-account
 credentials. Appends use RAW values so user text is not evaluated as formulas,
 and automatic append retries are disabled to avoid duplicate rows.
 
+## HungryHub CRM
+
+Set the server-only `HUNGRYHUB_FORM_URL` locally and in hosting to the complete
+HungryHub public-form endpoint, including its secret query parameter. Never
+put this URL in client code, public environment variables, or version control.
+
+Both forms send JSON to HungryHub after Turnstile verification and a confirmed
+Sheets save, before sending emails. They include `name`, `email`, `message`,
+and a server-assigned `source`: `General` for contact or `Waitlist` for waitlist.
+No hidden field or source query parameter is needed. Waitlist submissions also
+send `type_of_project`, `group_or_solo`, `price_range`, and `project_details`.
+Phone is omitted because the forms do not collect it.
+
+CRM requests time out after 10 seconds, reject redirects, and are not retried
+automatically. A CRM failure does not undo a saved submission or stop emails:
+the server logs a sanitized error, the API returns `crmSent: false`, and the
+studio notification includes a warning to check HungryHub before manually
+adding the saved lead. The visitor is not asked to resubmit a saved inquiry.
+No automatic CRM reconciliation is performed. Restart or redeploy after
+setting the environment variable.
+
 The newsletter signup has been omitted. The privacy page should be reviewed
 against the final hosting and Postmark account settings before launch.
 
